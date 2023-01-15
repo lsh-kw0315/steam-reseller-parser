@@ -120,22 +120,23 @@ for y in response_list:
     for i,j in zip(pure_price_tag,game_name_tag):
         pure_price=i.text
         game_name=j.text
+        
         game_name=game_name.replace("\n","")
         game_name=game_name.replace("\t","")
         game_name=game_name.strip()
-        
         pure_price=pure_price.replace("\n","")
         pure_price=pure_price.replace("\t","")
         pure_price=pure_price.replace(",","")
         pure_price=pure_price.strip()
         pure_price=pure_price.replace(" ","")
         pure_price=pure_price[1:]
+        
         game_price_map[game_name]=int(pure_price)
 lower_game=list()
 for name,price in game_price_map.items():
     if(price<=standard):
         lower_game.append(name)
-f=open('list.txt','w')
+f=open('directg_list.txt','w',encoding='utf-8')
 for text in lower_game:
     f.write(text+'\n')
 f.close()
