@@ -10,7 +10,7 @@ import os
 import time
 
 
-standard=30
+standard=5
 if len(sys.argv) >= 2:
     if(sys.argv[1].isdigit()):
         standard=int(sys.argv[1])
