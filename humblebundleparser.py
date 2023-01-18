@@ -33,7 +33,7 @@ if total_page*20<total:
 tmp_url=real_url
 html=driver.page_source
 game_price_map=dict()
-for x in range(total_page):
+for x in range(30):
     if(x>0):
         tmp_url=tmp_url.replace('page={0}'.format(x),'page={0}'.format(x+1))
         driver.get(tmp_url)
