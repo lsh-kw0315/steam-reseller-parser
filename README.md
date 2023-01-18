@@ -19,8 +19,9 @@ standard is 5$.
 2. cmd를 열고, 
    open cmd,
 >pip install beautifulsoup4<br>
+>pip install selenium<br>
 
-명령어를 입력하여 beautifulsoup를 설치합니다.
+명령어를 입력하여 beautifulsoup과 selenium을 설치합니다.
 input above command and install beautifulsoup.
 
 3. 이 사이트의 상단 초록색 Code 버튼을 누르고 download zip으로 다운로드합니다.
