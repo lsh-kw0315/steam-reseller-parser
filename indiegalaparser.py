@@ -68,4 +68,4 @@ for game,price in game_price_map.items():
     if price <= standard:
         f.write(game+"\n")
 f.close()
-
+print("task finished.")

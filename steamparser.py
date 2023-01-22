@@ -19,6 +19,7 @@ while(True):
         response=urllib.request.urlopen(request)
     except urllib.error.URLError as e:
         print(e)
+        break
     except Exception:
         break;
     header=response.headers
@@ -28,7 +29,7 @@ while(True):
         p=p.decode(encoding)
     soup=BeautifulSoup(p,'html.parser',from_encoding='utf-8')
     full_tag_list=soup.select('a.search_result_row.ds_collapse_flag')
-    if(len(full_tag_list)==0 or cnt>=100):
+    if(len(full_tag_list)==0):
         break
     for full_tag in full_tag_list:
         game_name=full_tag.select_one('span.title')
@@ -66,3 +67,4 @@ f=open('steamlist.txt','w',encoding='utf-8')
 for game,price in game_price_map.items():
     f.write(game+'\n')
 f.close()
+print("task finished.")

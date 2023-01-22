@@ -5,12 +5,24 @@ import urllib.robotparser
 from bs4 import BeautifulSoup
 import sys
 import os
+import math
+def price_formatting(price):
+    price=price.replace("\n","")
+    price=price.replace("\t","")
+    price=price.replace(",","")
+    price=price.strip()
+    price=price.replace(" ","")
+    price=price[1:]
+    return int(price)
 
-
-standard=10000
-if len(sys.argv) >= 2:
+standard_price=10000
+standard_discount=30
+if len(sys.argv) > 1:
     if(sys.argv[1].isdigit()):
-        standard=int(sys.argv[1])
+        standard_price=int(sys.argv[1])
+if len(sys.argv)>2:
+    if(sys.argv[2].isdigit()):
+        standard_discount=int(sys.argv[2])
 url = 'https://directg.net/game/game_thumb.html?page={0}{1}{2}{3}'
 real_url=None
 option_select=None
@@ -100,43 +112,40 @@ for x in range(total_page):
     response=urllib.request.urlopen(request)
     response_list.append(response);
 game_price_map=dict();
-for y in response_list:
-    header=y.headers
-    p=y.read()
+game_discount_map=dict()
+for response in response_list:
+    header=response.headers
+    p=response.read()
     if(not (header.get_content_charset()=="utf-8" or header.get_content_charset()=="euc-kr")):
         encoding=header.get_content_charset(failobj='utf-8')
         p=p.decode(encoding)
     soup=BeautifulSoup(p,'html.parser')
-    full_space_tag=soup.select("div.product.vm-col.vm-col-3.vertical-separator.col")
-    pure_price_tag=list()
-    game_name_tag=list()
-    for z in full_space_tag:
-        no_sell=z.select_one("span.label.label-primary")
+    full_tag_list=soup.select("div.product.vm-col.vm-col-3.vertical-separator.col")
+    for full_tag in full_tag_list:
+        no_sell=full_tag.select_one("span.label.label-primary")
         if(no_sell!=None):
             continue
         else:
-            pure_price_tag.append(z.select_one('span.PricesalesPrice'))
-            game_name_tag.append(z.select_one('div.vm-product-descr-container-1>a>h2'))
-    for i,j in zip(pure_price_tag,game_name_tag):
-        pure_price=i.text
-        game_name=j.text
-        
-        game_name=game_name.replace("\n","")
-        game_name=game_name.replace("\t","")
-        game_name=game_name.strip()
-        pure_price=pure_price.replace("\n","")
-        pure_price=pure_price.replace("\t","")
-        pure_price=pure_price.replace(",","")
-        pure_price=pure_price.strip()
-        pure_price=pure_price.replace(" ","")
-        pure_price=pure_price[1:]
-        
-        game_price_map[game_name]=int(pure_price)
-lower_game=list()
+            sale_price=full_tag.select_one('span.PricesalesPrice').text
+            game_name=full_tag.select_one('div.vm-product-descr-container-1>a>h2').text
+            base_price=full_tag.select_one('span.PricebasePrice').text
+            game_name=game_name.replace("\n","")
+            game_name=game_name.replace("\t","")
+            game_name=game_name.strip()
+            sale_price=price_formatting(sale_price)
+            base_price=price_formatting(base_price)
+            discount=(1-sale_price/base_price)*100
+            discount=math.trunc(discount)
+            game_price_map[game_name]=int(sale_price)
+            game_discount_map[game_name]=int(discount)
+f1=open('directg_price_list.txt','w',encoding='utf-8')
+f2=open('directg_discount_list.txt','w',encoding='utf-8')
 for name,price in game_price_map.items():
-    if(price<=standard):
-        lower_game.append(name)
-f=open('directg_list.txt','w',encoding='utf-8')
-for text in lower_game:
-    f.write(text+'\n')
-f.close()
+    if(price<=standard_price):
+        f1.write(name+'\n')
+for name,discount in game_discount_map.items():
+    if(discount>=standard_discount):
+        f2.write(name+'\n')
+f1.close()
+f2.close()
+print("task finished.")

@@ -25,8 +25,7 @@ while True:
     except urllib.error.URLError as e:
         print(e)
         break
-    except urllib.error.HTTPError as e:
-        print(e)
+    except Exception:
         break
     header=response.headers
     p=response.read()
@@ -36,8 +35,6 @@ while True:
     html=BeautifulSoup(p,'html.parser')
     to_json=json.loads(html.prettify())
     result_list=to_json['results']
-    if len(result_list)==0 or cnt>30:
-        break
     for result in result_list:
         if(result['cta_badge']=='coming_soon'):
             continue
@@ -48,3 +45,4 @@ f=open('HBbundlelist.txt','w',encoding='utf-8')
 for game in game_price_map.keys():
     f.write(game+'\n')
 f.close()
+print("task finished.")
