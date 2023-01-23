@@ -39,34 +39,42 @@ input cmd on the directory address bar. then you can open cmd. and...
 >python steamparser.py
 
 명령어 중 하나를 입력하면 txt 파일에 10000원 이하/5달러 이하의 게임목록이 directg_price_list에, 할인율 30% 이하인 게임목록이 directg_discount_list에 출력됩니다. 오류가 있다면 다시 실행해주세요.
-input one command of above four, you can get txt file which list games that are less than 5$. 
+input one command of above four, you can get price_txt file which list games that are less than 5$.<br>
+and you can also get discount_txt file which list games thar are less than 30%.<br>
 if an error occurs, please try again.
 
 만약 다른 금액을 기준으로 하고 싶다면<br>
-if you want to change standard, then..
+if you want to change standard of price, then..
 >python directgparser.py 5000<br>
 >python indiegalaparser.py 3<br>
->python humblebundleparser.py 3<br>
+>python HBbundleparser.py 3<br>
 >python fanaticalparser.py 3<br>
+>python steamparser.py 3<br>
 
-이렇게 인자를 주면 됩니다. 인자를 몇 개 나열하더라도 처음 인자만 적용됩니다.<br>
-input command like this.
+이렇게 인자를 주면 됩니다. 첫 인자가 가격을 결정합니다.<br>
+input command like this. first argument will set standard of price.<br>
 
-만약 다이렉트 게임즈에서 할인율 기준을 바꾸고 싶다면...
->puython directgparser.py 10000 50<br>
+만약 다이렉트 게임즈에서 할인율 기준을 바꾸고 싶다면...<br>
+if you want to change standard of discount, then..
+>python directgparser.py 10000 50<br>
+>python indiegalaparser.py 5 50<br>
+>python HBbundleparser.py 5 50<br>
+>python fanaticalparser.py 5 50<br>
+>python steamparser.py 5 50<br>
 
-이런 식으로 2번째 인자를 주면 됩니다.
+이런 식으로 인자를 주면 됩니다. 두 번째 인자가 할인율을 결정합니다.<br>
+input command like this. second argument will set standard of discount.<br>
 
 6. 다이렉트게임즈파서를 실행하면 여러가지 옵션을 설정할 수가 있습니다. 입력 형식에 맞추어 입력하시면 됩니다.
 
-7. 다시 cmd의 입력창이 뜰 때까지 기다렸다가 디렉토리에 생성된 ltxt의 게임 목록을 확인하시면 됩니다.<br>
-wait until you can input command on cmd, and check txt file.
+7. 다시 cmd의 입력창이 뜰 때까지 기다렸다가 디렉토리에 생성된 txt의 게임 목록을 확인하시면 됩니다.<br>
+wait until you can input command on cmd, and check txt file.<br>
 
 
 주의사항
 ---
-험블번들의 경우 많은 페이지 접속으로 인한 일시적 IP밴을 먹을 수가 있습니다. 따라서 코드를 일부 페이지만 탐색하기로 짰으므로 양해부탁드립니다.
+험블번들의 경우 많은 페이지 접속으로 인한 일시적 IP밴을 먹을 수가 있습니다. 따라서 코드를 일부 페이지만 탐색하기로 짰으므로 양해부탁드립니다.<br>
 in case of humblebundle, you can get IP ban becauseof a lot of page connection, so my code can't fully perform on all pages.
 
-스팀의 경우 타임아웃에 의해 모든 페이지를 탐색할 수가 없고 오래 걸립니다. 양해 바랍니다.
+스팀의 경우 타임아웃에 의해 모든 페이지를 탐색할 수가 없고 오래 걸립니다. 양해 바랍니다.<br>
 in case of steam, becauseof timeout it can't parse all page. 
