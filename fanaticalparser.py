@@ -8,6 +8,7 @@ import time
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
+import math
 
 standard_price=5
 standard_discount=30
@@ -44,7 +45,6 @@ for x in range(total_pages):
         act=ActionChains(driver)
         location=full_tag.location
         driver.execute_script('window.scrollTo({0},{1})'.format(location['x'],location['y']))
-        time.sleep(0.5)
         act.move_to_element(full_tag).perform()
         time.sleep(0.5)
         sale_price=full_tag.find_element(By.CSS_SELECTOR,'span.card-price').text
@@ -59,9 +59,9 @@ for x in range(total_pages):
         
         base_price=None
         try:
-            base_price=full_tag.find_element(By.CSS_SELECTOR,'span.was-price')
+            base_price=full_tag.find_element(By.CSS_SELECTOR,'div.was-price')
         except NoSuchElementException as e:
-            print('')
+            print('',sep='')
         
         if(base_price==None):
             base_price=sale_price
@@ -72,8 +72,11 @@ for x in range(total_pages):
             base_price=float(base_price)
         
         discount=(1-sale_price/base_price)*100
-        game_price_map[game_name]=sale_price
-        game_discount_map[game_name]=discount
+        discount=math.trunc(discount)
+        if(sale_price<=standard_price):
+            game_price_map[game_name]=sale_price
+        if(discount>=standard_discount):
+            game_discount_map[game_name]=discount
         scroll+=1
     if(x==0):
         tmp_url=url.format("page=1&")
@@ -81,12 +84,10 @@ for x in range(total_pages):
 driver.quit()
 f1=open("fanatical_price_list.txt","w",encoding='utf-8')
 f2=open("fanatical_discount_list.txt",'w',encoding='utf-8')
-for game,price in game_price_map.items():
-    if price <=standard_price:
-        f1.write(game+"\n")
-for game,discount in game_discount_map.items():
-    if discount>=standard_discount:
-        f2.write(game+'\n')
+for game in game_price_map.keys():
+    f1.write(game+"\n")
+for game in game_discount_map.keys():
+    f2.write(game+'\n')
 f1.close();
 f2.close();
 print("task finished.")

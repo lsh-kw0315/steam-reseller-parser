@@ -66,9 +66,11 @@ for x in range(total_pages):
         base_price=base_price[1:]
         
         discount=(1-float(sale_price)/float(base_price))*100
-    
-        game_price_map[game_name]=float(sale_price)
-        game_discount_map[game_name]=math.trunc(discount)
+        discount=float(discount)
+        if sale_price<=standard_price:
+            game_price_map[game_name]=float(sale_price)
+        if discount>=standard_discount:
+            game_discount_map[game_name]=math.trunc(discount)
         
     if x==0:
         next_button=driver.find_element(By.CSS_SELECTOR,'a.prev-next')

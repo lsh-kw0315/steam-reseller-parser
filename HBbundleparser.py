@@ -43,7 +43,7 @@ while True:
     for result in result_list:
         if(result['cta_badge']=='coming_soon'):
             continue
-        if(result['current_price']['amount']<standard_price):
+        if(result['current_price']['amount']<=standard_price):
             game_price_map[result['human_name']]=result['current_price']['amount']
             
         discount=(1-result['current_price']['amount']/result['full_price']['amount'])*100

@@ -136,16 +136,16 @@ for response in response_list:
             base_price=price_formatting(base_price)
             discount=(1-sale_price/base_price)*100
             discount=math.trunc(discount)
-            game_price_map[game_name]=int(sale_price)
-            game_discount_map[game_name]=int(discount)
+            if sale_price<=standard_price:
+                game_price_map[game_name]=int(sale_price)
+            if discount>=standard_discount:
+                game_discount_map[game_name]=int(discount)
 f1=open('directg_price_list.txt','w',encoding='utf-8')
 f2=open('directg_discount_list.txt','w',encoding='utf-8')
-for name,price in game_price_map.items():
-    if(price<=standard_price):
-        f1.write(name+'\n')
-for name,discount in game_discount_map.items():
-    if(discount>=standard_discount):
-        f2.write(name+'\n')
+for name in game_price_map.keys():
+    f1.write(name+'\n')
+for name in game_discount_map.keys():
+   f2.write(name+'\n')
 f1.close()
 f2.close()
 print("task finished.")
