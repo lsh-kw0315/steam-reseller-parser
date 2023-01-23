@@ -8,11 +8,16 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import math
 
-standard=5
-if len(sys.argv)>=2:
+standard_price=5
+standard_discount=30
+if len(sys.argv)>1:
     if(sys.argv[1].isdigit()):
-        standard=int(sys.argv[1])
+        standard_price=int(sys.argv[1])
+if len(sys.argv)>2:
+    if(sys.argv[2].isdigit()):
+        standard_discount=int(sys.argv[2])
 
 url='https://www.indiegala.com/games/all'
 options=webdriver.ChromeOptions();
@@ -29,6 +34,7 @@ total_pages=total_game//36
 if(total_pages==0 or total_pages*36<total_game):
     total_pages+=1
 game_price_map=dict()
+game_discount_map=dict()
 for x in range(total_pages):
     wait=WebDriverWait(driver,60)
     element=wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'section.browse-default-browse-main-container.default-main-container.main-container')))    
@@ -37,22 +43,33 @@ for x in range(total_pages):
     full_tags=soup.select("div.main-list-item-col.left")
     if(len(full_tags)==0):
         break
-    for i in full_tags:
-        game_name_tag=i.select_one('span.product-title-span')
-        pure_price_tag=None
-        if(i.select_one('div.double-price.right')==None):
-            pure_price_tag=i.select_one('div.price.right')
+    for full_tag in full_tags:
+        game_name_tag=full_tag.select_one('span.product-title-span')
+        sale_price_tag=full_tag.select_one('div.double-price.right')
+        base_price=None
+        if(sale_price_tag==None):
+            sale_price_tag=full_tag.select_one('div.price.right')
+            base_price_tag=full_tag.select_one('div.price.right')
         else:
-            pure_price_tag=i.select_one('div.current-price')
+            sale_price_tag=full_tag.select_one('div.current-price')
+            base_price_tag=full_tag.select_one('div.old-price')
         game_name=game_name_tag.text
-        pure_price=pure_price_tag.text
+        sale_price=sale_price_tag.text
+        base_price=base_price_tag.text
         
         game_name=game_name.strip()
         
-        pure_price=pure_price.strip()
-        pure_price=pure_price[1:]
+        sale_price=sale_price.strip()
+        sale_price=sale_price[1:]
         
-        game_price_map[game_name]=float(pure_price)
+        base_price=base_price.strip()
+        base_price=base_price[1:]
+        
+        discount=(1-float(sale_price)/float(base_price))*100
+    
+        game_price_map[game_name]=float(sale_price)
+        game_discount_map[game_name]=math.trunc(discount)
+        
     if x==0:
         next_button=driver.find_element(By.CSS_SELECTOR,'a.prev-next')
         next_button.send_keys(Keys.ENTER)
@@ -63,9 +80,14 @@ for x in range(total_pages):
     time.sleep(3)
 driver.quit()
 
-f=open('indiegalalist.txt','w',encoding='utf-8')
+f1=open('indiegala_price_list.txt','w',encoding='utf-8')
+f2=open('indiegala_discount_list.txt','w',encoding='utf-8')
 for game,price in game_price_map.items():
-    if price <= standard:
-        f.write(game+"\n")
-f.close()
+    if price <= standard_price:
+        f1.write(game+"\n")
+for game,discount in game_discount_map.items():
+    if discount >= standard_discount:
+        f2.write(game+'\n')
+f1.close()
+f2.close()
 print("task finished.")

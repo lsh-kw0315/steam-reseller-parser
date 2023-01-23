@@ -4,17 +4,22 @@ import urllib.response
 import urllib.error
 import json
 import sys
-
+import math
 url='https://www.humblebundle.com/store/api/search?sort=bestselling&filter=all&hmb_source=navbar{0}&request=1'
 json_url=url.format("")
 headers = {'User-Agent': 'Chrome/66.0.3359.181'}
-standard=5
+standard_price=5
+standard_discount=30
 if len(sys.argv)>1:
     if sys.argv[1].isdigit():
-        standard=int(sys.argv[1])
-    
+        standard_price=int(sys.argv[1])
+
+if len(sys.argv)>2:
+    if sys.argv[2].isdigit():
+        standard_discount=int(sys.argv[2])
 cnt=0
 game_price_map=dict()
+game_discount_map=dict()
 while True:
     if cnt>0:
         json_url=url.format("&page={0}".format(cnt))
@@ -38,11 +43,19 @@ while True:
     for result in result_list:
         if(result['cta_badge']=='coming_soon'):
             continue
-        if(result['current_price']['amount']<standard):
+        if(result['current_price']['amount']<standard_price):
             game_price_map[result['human_name']]=result['current_price']['amount']
+            
+        discount=(1-result['current_price']['amount']/result['full_price']['amount'])*100
+        discount=math.trunc(discount)
+        if(discount>=standard_discount):
+            game_discount_map[result['human_name']]=discount
     cnt+=1
-f=open('HBbundlelist.txt','w',encoding='utf-8')
+f1=open('HBbundle_price_list.txt','w',encoding='utf-8')
+f2=open('HBbundle_discount_list.txt','w',encoding='utf-8')
 for game in game_price_map.keys():
-    f.write(game+'\n')
-f.close()
+    f1.write(game+'\n')
+for game in game_discount_map.keys():
+    f2.write(game+'\n')
+f2.close()
 print("task finished.")

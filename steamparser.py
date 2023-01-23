@@ -4,12 +4,19 @@ import urllib.error
 from bs4 import BeautifulSoup
 import sys
 url='https://store.steampowered.com/search/?ignore_preferences=1&ndl=1&page=0'
-standard=5000
+standard_price=5000
+standard_discount=30
 cnt=0
 if len(sys.argv)>1:
     if sys.argv[1].isdigit():
-        standard=int(sys.argv[1])
+        standard_price=int(sys.argv[1])
+if len(sys.argv)>2:
+    if sys.argv[2].isdigit():
+        standard_discount=int(sys.argv[2])
+        
 game_price_map=dict()
+game_discount_map=dict()
+
 while(True):
     headers = {'User-Agent': 'Chrome/66.0.3359.181'}
     url=url.replace('page={0}'.format(cnt),'page={0}'.format(cnt+1))
@@ -34,16 +41,35 @@ while(True):
     for full_tag in full_tag_list:
         game_name=full_tag.select_one('span.title')
         pure_price=full_tag.select_one('div.col.search_price.discounted.responsive_secondrow')
+        discount=full_tag.select_one('div.col.search_discount.responsive_secondrow>span')
+        
+        if discount==None:
+            discount=0
+        else:
+            discount=discount.text
+            discount=discount.strip()
+            discount=discount.replace('\n','')
+            discount=discount.replace('\t','')
+            per_index=discount.find('%')
+            discount=discount[:per_index]
+            discount=int(discount)
+            
         if pure_price==None:
             pure_price=soup.select_one('div.col.search_price.responsive_secondrow')
+            
         game_name=game_name.get_text(strip=True)
         game_name=game_name.strip()
+        
         pure_price=pure_price.get_text(strip=True)
         pure_price=pure_price.strip()
         pure_price=pure_price.replace('\n','')
         pure_price=pure_price.replace('\t','')
         pure_price=pure_price.replace(',','')
         pure_price=pure_price.replace(' ','')
+        
+        if(discount>=standard_discount):
+            game_discount_map[game_name]=discount
+        
         if pure_price.startswith('Free'):
             game_price_map[game_name]=0
         elif pure_price=="":
@@ -60,11 +86,15 @@ while(True):
             if escape_text>0:
                 pure_price=pure_price[:escape_text]
             pure_price=int(pure_price)
-            if pure_price <= standard:
+            if pure_price <= standard_price:
                 game_price_map[game_name]=pure_price
     cnt+=1
-f=open('steamlist.txt','w',encoding='utf-8')
-for game,price in game_price_map.items():
-    f.write(game+'\n')
-f.close()
+f1=open('steam_price_list.txt','w',encoding='utf-8')
+f2=open('steam_discount_list.txt','w',encoding='utf-8')
+for game in game_price_map.keys():
+    f1.write(game+'\n')
+for game in game_discount_map.keys():
+    f2.write(game+'\n')
+f1.close()
+f2.close()
 print("task finished.")

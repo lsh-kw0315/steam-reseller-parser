@@ -7,12 +7,17 @@ import sys
 import time
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 
-standard=5
-if len(sys.argv)>=2:
+standard_price=5
+standard_discount=30
+if len(sys.argv)>1:
     if(sys.argv[1].isdigit()):
-        standard=int(sys.argv[1])
-        
+        standard_price=int(sys.argv[1])
+if len(sys.argv)>2:
+    if(sys.argv[2].isdigit()):
+        standard_discount=int(sys.argv[2])
+
 url='https://www.fanatical.com/en/search?{0}types=game%2Cdlc%2Cbundle'
 option=webdriver.ChromeOptions()
 driver=webdriver.Chrome(executable_path='chromedriver',options=option)
@@ -26,6 +31,7 @@ if(total_pages==0 or total_pages*36 < total_game):
     total_pages+=1
 tmp_url=url.format("")
 game_price_map=dict()
+game_discount_map=dict()
 for x in range(total_pages):
     if(x>0):
         tmp_url=tmp_url.replace('page={0}'.format(x),'page={0}'.format(x+1))
@@ -34,31 +40,53 @@ for x in range(total_pages):
     scroll=0
     if(len(full_elements)==0):
         break
-    for y in full_elements:
+    for full_tag in full_elements:
         act=ActionChains(driver)
-        location=y.location
+        location=full_tag.location
         driver.execute_script('window.scrollTo({0},{1})'.format(location['x'],location['y']))
         time.sleep(0.5)
-        act.move_to_element(y).perform()
+        act.move_to_element(full_tag).perform()
         time.sleep(0.5)
-        pure_price=y.find_element(By.CSS_SELECTOR,'span.card-price').text
-        game_name=y.find_element(By.CSS_SELECTOR,'div.hit-card-game-name>a.faux-block-link__overlay-link').text
-        pure_price.strip()
-        if(pure_price.startswith("From")):
-            pure_price=pure_price[6:]
+        sale_price=full_tag.find_element(By.CSS_SELECTOR,'span.card-price').text
+        game_name=full_tag.find_element(By.CSS_SELECTOR,'div.hit-card-game-name>a.faux-block-link__overlay-link').text
+        sale_price.strip()
+        if(sale_price.startswith("From")):
+            sale_price=sale_price[6:]
         else:
-            pure_price=pure_price[1:]
-        pure_price=float(pure_price)      
+            sale_price=sale_price[1:]
+        sale_price=float(sale_price)      
         game_name.strip()
-        game_price_map[game_name]=pure_price
+        
+        base_price=None
+        try:
+            base_price=full_tag.find_element(By.CSS_SELECTOR,'span.was-price')
+        except NoSuchElementException as e:
+            print('')
+        
+        if(base_price==None):
+            base_price=sale_price
+        else:
+            base_price=base_price.text
+            base_price=base_price.strip()
+            base_price=base_price[1:]
+            base_price=float(base_price)
+        
+        discount=(1-sale_price/base_price)*100
+        game_price_map[game_name]=sale_price
+        game_discount_map[game_name]=discount
         scroll+=1
     if(x==0):
         tmp_url=url.format("page=1&")
     
 driver.quit()
-f=open("fanaticallist.txt","w",encoding='utf-8')
+f1=open("fanatical_price_list.txt","w",encoding='utf-8')
+f2=open("fanatical_discount_list.txt",'w',encoding='utf-8')
 for game,price in game_price_map.items():
-    if price <=standard:
-        f.write(game+"\n")
-f.close();
+    if price <=standard_price:
+        f1.write(game+"\n")
+for game,discount in game_discount_map.items():
+    if discount>=standard_discount:
+        f2.write(game+'\n')
+f1.close();
+f2.close();
 print("task finished.")
