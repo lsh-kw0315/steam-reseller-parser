@@ -61,6 +61,7 @@ for x in range(total_pages):
         
         sale_price=sale_price.strip()
         sale_price=sale_price[1:]
+        sale_price=float(sale_price)
         
         base_price=base_price.strip()
         base_price=base_price[1:]
