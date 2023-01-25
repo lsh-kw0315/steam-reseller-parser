@@ -5,6 +5,7 @@ steam-reseller-parser
 ---
 I ain't english speaker, so you may be able not to understand what I wrote below. feel free to ask me what you can't understand.<br>
 
+이 소프트웨어는 윈도우 환경에서만 원활히 동작합니다.<br>this software only opreate on windows.<br>
 
 다양한 스팀 리셀러 사이트에서 일정 이하 가격의 게임의 리스트를 보여주는 프로그램입니다.<br>
 It is a program that shows a list of games that are below a certain price on various steam reseller sites.
@@ -12,8 +13,12 @@ It is a program that shows a list of games that are below a certain price on var
 다이렉트 게임즈의 디폴트 값은 10000원, 스팀의 디폴트값은 5000원 그 외 다른 해외 리셀러는 5$가 디폴트입니다.<br>
 standard is 5$. p.s currency of steam is KRW. not USD.<br>
 
-사용방법
+테스트 및 사용방법<br>for test and use
 ---
+0. 그냥 사용이 목적이라면  이 사이트의 상단 초록색 Code 버튼을 누르고 download zip으로 다운로드해서 압축을 풀고 dist 디렉토리의 실행파일을 실행하세요. 만약 소스코드 수정을 하고 싶으시다면 이하 절차를 따르시길 바랍니다.<br>
+if you don't want to modify this software and just want to use it, click the green 'Code' button which is above this website and click 'download zip' button, decompress the file you downloaded, open the directory that is created by decompressing the file, open dist directory, and execute exe file.<br>
+if you want to modify this software and test this software, please see below.<br>
+
 1. 파이썬을 설치합니다.<br>
    install the python.
 2. cmd를 열고, <br>
