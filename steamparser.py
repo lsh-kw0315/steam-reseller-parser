@@ -51,7 +51,7 @@ while(True):
             discount=discount.replace('\n','')
             discount=discount.replace('\t','')
             per_index=discount.find('%')
-            discount=discount[:per_index]
+            discount=discount[1:per_index]
             discount=int(discount)
             
         if pure_price==None:
