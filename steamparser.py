@@ -1,18 +1,21 @@
-import urllib.request
-import urllib.response
+from urllib.request import Request
+from urllib.request import urlopen
 import urllib.error
 from bs4 import BeautifulSoup
-import sys
-url='https://store.steampowered.com/search/?ignore_preferences=1&ndl=1&page=0'
+from sys import argv
+from time import sleep
+from pandas import DataFrame
+
+url='https://store.steampowered.com/search/?ignore_preferences=1&category1=998&hidef2p=1&page={}&ndl=1'
 standard_price=5000
 standard_discount=30
 cnt=0
-if len(sys.argv)>1:
-    if sys.argv[1].isdigit():
-        standard_price=int(sys.argv[1])
-if len(sys.argv)>2:
-    if sys.argv[2].isdigit():
-        standard_discount=int(sys.argv[2])
+if len(argv)>1:
+    if argv[1].isdigit():
+        standard_price=int(argv[1])
+if len(argv)>2:
+    if argv[2].isdigit():
+        standard_discount=int(argv[2])
         
 game_price_map=dict()
 game_discount_map=dict()
@@ -22,8 +25,8 @@ while(True):
     url=url.replace('page={0}'.format(cnt),'page={0}'.format(cnt+1))
     response=None
     try:
-        request=urllib.request.Request(url,headers=headers)
-        response=urllib.request.urlopen(request)
+        request=Request(url,headers=headers)
+        response=urlopen(request)
     except urllib.error.URLError as e:
         print(e)
         break
@@ -35,7 +38,8 @@ while(True):
         encoding=header.get_content_charset(failobj='utf-8')
         p=p.decode(encoding)
     soup=BeautifulSoup(p,'html.parser',from_encoding='utf-8')
-    full_tag_list=soup.select('a.search_result_row.ds_collapse_flag')
+    #full_tag_list=soup.select('a.search_result_row.ds_collapse_flag.app_impression_tracked')
+    full_tag_list=soup.find_all('a',class_='search_result_row ds_collapse_flag')
     if(len(full_tag_list)==0):
         break
     for full_tag in full_tag_list:
@@ -89,8 +93,15 @@ while(True):
             if pure_price <= standard_price:
                 game_price_map[game_name]=pure_price
     cnt+=1
+    sleep(1)
 f1=open('steam_price_list.txt','w',encoding='utf-8')
 f2=open('steam_discount_list.txt','w',encoding='utf-8')
+df_price=DataFrame.from_dict([game_price_map])
+df_discount=DataFrame.from_dict([game_discount_map])
+df_price=df_price.melt(var_name='game',value_name='price')
+df_discount=df_discount.melt(var_name="game",value_name="discount") 
+df_price.to_excel('steam_price_list.xlsx')
+df_discount.to_excel('steam_discount_list.xlsx')
 for game in game_price_map.keys():
     f1.write(game+'\n')
 for game in game_discount_map.keys():

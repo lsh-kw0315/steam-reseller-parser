@@ -1,23 +1,23 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ActionChains
-import sys
-import time
+from sys import argv
+from time import sleep
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import math
+from math import trunc
+from pandas import DataFrame
 
 standard_price=5
 standard_discount=30
-if len(sys.argv)>1:
-    if(sys.argv[1].isdigit()):
-        standard_price=int(sys.argv[1])
-if len(sys.argv)>2:
-    if(sys.argv[2].isdigit()):
-        standard_discount=int(sys.argv[2])
+if len(argv)>1:
+    if(argv[1].isdigit()):
+        standard_price=int(argv[1])
+if len(argv)>2:
+    if(argv[2].isdigit()):
+        standard_discount=int(argv[2])
 
 url='https://www.indiegala.com/games/all'
 options=webdriver.ChromeOptions();
@@ -71,20 +71,39 @@ for x in range(total_pages):
         if sale_price<=standard_price:
             game_price_map[game_name]=float(sale_price)
         if discount>=standard_discount:
-            game_discount_map[game_name]=math.trunc(discount)
-        
-    if x==0:
-        next_button=driver.find_element(By.CSS_SELECTOR,'a.prev-next')
-        next_button.send_keys(Keys.ENTER)
-    else:
-        buttons=driver.find_elements(By.CSS_SELECTOR,'a.prev-next')
-        next_button=buttons[2]
-        next_button.send_keys(Keys.ENTER)
-    time.sleep(3)
+            game_discount_map[game_name]=trunc(discount)
+    try:   
+        if x==0:
+            next_button=driver.find_element(By.CSS_SELECTOR,'a.prev-next')
+            next_button.send_keys(Keys.ENTER)
+        else:
+            buttons=driver.find_elements(By.CSS_SELECTOR,'a.prev-next')
+            next_button=buttons[2]
+            next_button.send_keys(Keys.ENTER)
+    except Exception:
+        while True:
+            if x==0:
+                next_button=driver.find_element(By.CSS_SELECTOR,'a.prev-next')
+                if next_button !=None:
+                    next_button.send_keys(Keys.ENTER)
+                    break
+            else:
+                buttons=driver.find_elements(By.CSS_SELECTOR,'a.prev-next')
+                if buttons: 
+                    next_button=buttons[2]
+                    next_button.send_keys(Keys.ENTER)
+                    break
+    sleep(0.7)
 driver.quit()
 
 f1=open('indiegala_price_list.txt','w',encoding='utf-8')
 f2=open('indiegala_discount_list.txt','w',encoding='utf-8')
+df_price=DataFrame.from_dict([game_price_map])
+df_discount=DataFrame.from_dict([game_discount_map])
+df_price=df_price.melt(var_name='game',value_name='price')
+df_discount=df_discount.melt(var_name="game",value_name="discount") 
+df_price.to_excel('indiegala_price_list.xlsx')
+df_discount.to_excel('indiegalas_discount_list.xlsx')
 for game,price in game_price_map.items():
     if price <= standard_price:
         f1.write(game+"\n")

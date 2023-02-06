@@ -1,11 +1,12 @@
-import urllib.request
-import urllib.response
+from urllib.request import Request
+from urllib.request import urlopen
 import urllib.error
-import urllib.robotparser
 from bs4 import BeautifulSoup
-import sys
-import os
-import math
+from sys import argv
+from os import system
+from math import trunc
+from pandas import DataFrame
+
 def price_formatting(price):
     price=price.replace("\n","")
     price=price.replace("\t","")
@@ -17,12 +18,12 @@ def price_formatting(price):
 
 standard_price=10000
 standard_discount=30
-if len(sys.argv) > 1:
-    if(sys.argv[1].isdigit()):
-        standard_price=int(sys.argv[1])
-if len(sys.argv)>2:
-    if(sys.argv[2].isdigit()):
-        standard_discount=int(sys.argv[2])
+if len(argv) > 1:
+    if(argv[1].isdigit()):
+        standard_price=int(argv[1])
+if len(argv)>2:
+    if(argv[2].isdigit()):
+        standard_discount=int(argv[2])
 url = 'https://directg.net/game/game_thumb.html?page={0}{1}{2}{3}'
 real_url=None
 option_select=None
@@ -37,7 +38,7 @@ while(True):
 if(option_select==1):
     
     while(True):
-        os.system('cls')
+        system('cls')
         print("장르를 설정합니다")
         print("0:설정안함, 2:액션, 3:어드벤처, 4:레이싱/스포츠, 5:롤플레잉, 6:슈팅/FPS, 7:퍼즐, 8:시뮬레이션")
         print("9:기타, 10:전략, 11:액션/RPG 12:액션/어드벤처, 13:스포츠 14:슈팅/액션/RPG, 15:액션/시뮬레이션")
@@ -48,7 +49,7 @@ if(option_select==1):
             break
         
     while(True):
-        os.system('cls')
+        system('cls')
         print("플랫폼을 설정합니다")
         print('0:설정 안함, 에픽게임즈:34, 록스타게임런처:35, 스팀:1, 유비소프트 커넥트:30, 기타:32')
         platform_select=input('여기에 입력:')
@@ -58,7 +59,7 @@ if(option_select==1):
                 break
             
     while(True):
-        os.system('cls')
+        system('cls')
         print("게임의 유형을 설정합니다")
         print("0:설정 안함, 1:기본 게임, 2:DLC, 3:번들")
         goods_select=input("여기에 입력:")
@@ -90,7 +91,7 @@ headers = {'User-Agent': 'Chrome/66.0.3359.181'}
 response = None
 try:
     # 403 에러를 피하는 용도
-    request = urllib.request.Request(real_url, headers=headers)
+    request = Request(real_url, headers=headers)
     response = urllib.request.urlopen(request)
 except urllib.error.URLError as e:
     print(e)
@@ -135,13 +136,19 @@ for response in response_list:
             sale_price=price_formatting(sale_price)
             base_price=price_formatting(base_price)
             discount=(1-sale_price/base_price)*100
-            discount=math.trunc(discount)
+            discount=trunc(discount)
             if sale_price<=standard_price:
                 game_price_map[game_name]=int(sale_price)
             if discount>=standard_discount:
                 game_discount_map[game_name]=int(discount)
 f1=open('directg_price_list.txt','w',encoding='utf-8')
 f2=open('directg_discount_list.txt','w',encoding='utf-8')
+df_price=DataFrame.from_dict([game_price_map])
+df_discount=DataFrame.from_dict([game_discount_map])
+df_price=df_price.melt(var_name='게임',value_name='가격')
+df_discount=df_discount.melt(var_name="게임",value_name="할인율") 
+df_price.to_excel('directg_price_list.xlsx')
+df_discount.to_excel('directg_discount_list.xlsx')
 for name in game_price_map.keys():
     f1.write(name+'\n')
 for name in game_discount_map.keys():
