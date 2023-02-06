@@ -25,9 +25,10 @@ if you want to modify this software and test this software, please see below.<br
    open cmd,
 >pip install beautifulsoup4<br>
 >pip install selenium<br>
+>pip install pandas<br>
 
-명령어를 입력하여 beautifulsoup과 selenium을 설치합니다.<br>
-input above command and install beautifulsoup.
+명령어를 입력하여 beautifulsoup과 selenium, pandas를 설치합니다.<br>
+input above command and install beautifulsoup, selenium, pandas.
 
 3. 이 사이트의 상단 초록색 Code 버튼을 누르고 download zip으로 다운로드합니다.<br>
 click the green 'Code' button which is above this website and click 'download zip' button
@@ -72,8 +73,8 @@ input command like this. second argument will set standard of discount.<br>
 
 6. 다이렉트게임즈파서를 실행하면 여러가지 옵션을 설정할 수가 있습니다. 입력 형식에 맞추어 입력하시면 됩니다.
 
-7. 다시 cmd의 입력창이 뜰 때까지 기다렸다가 디렉토리에 생성된 txt의 게임 목록을 확인하시면 됩니다.<br>
-wait until you can input command on cmd, and check txt file.<br>
+7. 다시 cmd의 입력창이 뜰 때까지 기다렸다가 디렉토리에 생성된 txt와 xlsx의 게임 목록을 확인하시면 됩니다.<br>
+wait until you can input command on cmd, and check txt file and xlsx file.<br>
 
 
 주의사항
