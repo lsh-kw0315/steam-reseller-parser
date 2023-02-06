@@ -22,9 +22,10 @@ standard is 5$. p.s currency of steam is KRW. not USD.<br>
 >pip install beautifulsoup4<br>
 >pip install selenium<br>
 >pip install pandas<br>
+>pip install openpyxl<br>
 
-명령어를 입력하여 beautifulsoup과 selenium, pandas를 설치합니다.<br>
-input above command and install beautifulsoup, selenium, pandas.
+명령어를 입력하여 beautifulsoup과 selenium, pandas, openpxyl를 설치합니다.<br>
+input above command and install beautifulsoup, selenium, pandas, openpyxl.
 
 3. 이 사이트의 상단 초록색 Code 버튼을 누르고 download zip으로 다운로드합니다.<br>
 click the green 'Code' button which is above this website and click 'download zip' button
