@@ -19,7 +19,7 @@ if len(argv)>2:
         
 game_price_map=dict()
 game_discount_map=dict()
-
+url=url.format(cnt);
 while(True):
     headers = {'User-Agent': 'Chrome/66.0.3359.181'}
     url=url.replace('page={0}'.format(cnt),'page={0}'.format(cnt+1))
@@ -71,6 +71,7 @@ while(True):
         pure_price=pure_price.replace(',','')
         pure_price=pure_price.replace(' ','')
         
+        
         if(discount>=standard_discount):
             game_discount_map[game_name]=discount
         
@@ -79,7 +80,18 @@ while(True):
         elif pure_price=="":
             continue
         else:
-            pure_price=pure_price[1:]
+            if(discount==0):
+                pure_price=pure_price[1:]
+            else:
+                won_cnt=0;
+                won_idx=0;
+                for idx in pure_price:
+                    if(not idx.isdigit() and won_cnt==0):
+                        won_cnt+=1
+                    elif(not idx.isdigit() and won_cnt>0):
+                        break
+                    won_idx+=1
+                pure_price=pure_price[won_idx+1:]
             escape_text=-1
             index=0
             for idx in pure_price:

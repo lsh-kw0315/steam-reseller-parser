@@ -33,6 +33,8 @@ while True:
         selection=input("your connection is blocked. wait 15 minutes?(if you want to wait, input 0.)")
         if(selection.isdigit() and int(selection)==0):
             sleep(60*17)
+            request=Request(json_url,headers=headers)
+            response=urlopen(request)
         else:
             break
     except Exception:
