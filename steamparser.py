@@ -59,7 +59,7 @@ while(True):
             discount=int(discount)
             
         if pure_price==None:
-            pure_price=soup.select_one('div.col.search_price.responsive_secondrow')
+            pure_price=full_tag.select_one('div.col.search_price.responsive_secondrow')
             
         game_name=game_name.get_text(strip=True)
         game_name=game_name.strip()
@@ -70,7 +70,6 @@ while(True):
         pure_price=pure_price.replace('\t','')
         pure_price=pure_price.replace(',','')
         pure_price=pure_price.replace(' ','')
-        
         
         if(discount>=standard_discount):
             game_discount_map[game_name]=discount
